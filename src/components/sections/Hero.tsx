@@ -24,6 +24,8 @@ export function Hero() {
   const isTransitioning = useRef(false);
   const lastWheelTime = useRef(0);
   const accumulatedDelta = useRef(0);
+  const touchStartY = useRef(0);
+  const touchAccumulatedDelta = useRef(0);
 
   useEffect(() => {
     // Lenis 스크롤 멈추기 (히어로에서 이미지 전환하는 동안)
@@ -33,31 +35,9 @@ export function Hero() {
       lenis.stop();
     }
 
-    const handleWheel = (e: WheelEvent) => {
-      if (isComplete) return;
-
-      e.preventDefault();
-
-      // 트랜지션 중이면 무시
+    // 이미지 전환 로직
+    const handleTransition = (direction: number) => {
       if (isTransitioning.current) return;
-
-      const now = Date.now();
-
-      // 300ms 이내의 스크롤은 누적
-      if (now - lastWheelTime.current > 300) {
-        accumulatedDelta.current = 0;
-      }
-
-      lastWheelTime.current = now;
-      accumulatedDelta.current += e.deltaY;
-
-      // 누적된 delta가 임계값을 넘어야 전환
-      const threshold = 50;
-
-      if (Math.abs(accumulatedDelta.current) < threshold) return;
-
-      const direction = accumulatedDelta.current > 0 ? 1 : -1;
-      accumulatedDelta.current = 0;
 
       // 아래로 스크롤
       if (direction > 0) {
@@ -87,10 +67,70 @@ export function Hero() {
       }
     };
 
+    // 데스크톱 휠 이벤트
+    const handleWheel = (e: WheelEvent) => {
+      if (isComplete) return;
+
+      e.preventDefault();
+
+      if (isTransitioning.current) return;
+
+      const now = Date.now();
+
+      if (now - lastWheelTime.current > 300) {
+        accumulatedDelta.current = 0;
+      }
+
+      lastWheelTime.current = now;
+      accumulatedDelta.current += e.deltaY;
+
+      const threshold = 50;
+
+      if (Math.abs(accumulatedDelta.current) < threshold) return;
+
+      const direction = accumulatedDelta.current > 0 ? 1 : -1;
+      accumulatedDelta.current = 0;
+
+      handleTransition(direction);
+    };
+
+    // 모바일 터치 이벤트
+    const handleTouchStart = (e: TouchEvent) => {
+      if (isComplete) return;
+      touchStartY.current = e.touches[0].clientY;
+      touchAccumulatedDelta.current = 0;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (isComplete) return;
+      e.preventDefault();
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (isComplete) return;
+      if (isTransitioning.current) return;
+
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaY = touchStartY.current - touchEndY;
+
+      const threshold = 50;
+
+      if (Math.abs(deltaY) < threshold) return;
+
+      const direction = deltaY > 0 ? 1 : -1;
+      handleTransition(direction);
+    };
+
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [currentImageIndex, isComplete]);
 
