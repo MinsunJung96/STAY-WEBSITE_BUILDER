@@ -27,7 +27,7 @@ export function Portfolio() {
     <section id="portfolio" className="bg-white min-h-screen">
       <div className="grid grid-cols-1 lg:grid-cols-3 h-full lg:h-screen">
         {/* Left Side - Info Panel */}
-        <div className="col-span-1 flex flex-col justify-center p-8 md:p-12 lg:p-16">
+        <div className="col-span-1 flex flex-col justify-center pt-[72px] px-8 pb-8 md:px-12 md:pb-12 lg:px-16 lg:pb-16">
           {/* Title & Description */}
           <div className="overflow-hidden flex-1">
             <AnimatePresence mode="wait">
