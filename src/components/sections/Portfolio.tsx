@@ -24,10 +24,10 @@ export function Portfolio() {
   const activeItem = portfolio.items[activeIndex];
 
   return (
-    <section id="portfolio" className="bg-white h-screen lg:h-auto">
-      <div className="flex flex-col lg:grid lg:grid-cols-3 h-screen lg:h-auto lg:min-h-[80vh]">
+    <section id="portfolio" className="bg-white">
+      <div className="grid grid-cols-1 lg:grid-cols-3 min-h-screen lg:min-h-[80vh]">
         {/* Left Side - Info Panel */}
-        <div className="flex flex-col justify-between p-8 md:p-12 lg:p-16 h-[30vh] lg:h-auto flex-shrink-0 overflow-hidden">
+        <div className="col-span-1 flex flex-col justify-between p-8 md:p-12 lg:p-16">
           {/* Title & Description */}
           <div className="overflow-hidden flex-1">
             <AnimatePresence mode="wait">
@@ -61,13 +61,13 @@ export function Portfolio() {
           </div>
         </div>
 
-        {/* Right Side - Image Grid (2x2 on desktop, 1 column on mobile) */}
-        <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 h-[70vh] lg:h-auto flex-1">
+        {/* Right Side - Image Grid (2x2) */}
+        <div className="col-span-1 lg:col-span-2 grid grid-cols-2 grid-rows-2">
           {portfolio.items.map((item, index) => (
             <Link
               key={item.id}
               href={item.link}
-              className="relative overflow-hidden bg-neutral-900 min-h-0 lg:aspect-auto"
+              className="relative overflow-hidden bg-neutral-900 aspect-square lg:aspect-auto"
               onMouseEnter={() => !isMobile && setActiveIndex(index)}
               onClick={(e) => {
                 if (isMobile && activeIndex !== index) {
