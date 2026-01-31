@@ -1,106 +1,98 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { siteContent } from "@/lib/content";
 
 export function Portfolio() {
   const { portfolio } = siteContent;
   const [activeIndex, setActiveIndex] = useState(0);
-  const [showAfter, setShowAfter] = useState<{ [key: number]: boolean }>({});
+  const [isMobile, setIsMobile] = useState(false);
 
-  const toggleBeforeAfter = (id: number) => {
-    setShowAfter((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const activeItem = portfolio.items[activeIndex];
 
   return (
-    <section id="portfolio" className="section-padding">
-      <div className="container-custom">
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-16"
-        >
-          <p className="text-accent font-medium mb-4">{portfolio.tagline}</p>
-          <h2 className="heading-2 mb-4">{portfolio.headline}</h2>
-          <p className="body-large max-w-2xl mx-auto">{portfolio.description}</p>
-        </motion.div>
-
-        {/* Portfolio Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {portfolio.items.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="group"
-            >
-              {/* Image Container with Before/After */}
-              <div
-                className="relative aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer"
-                onClick={() => toggleBeforeAfter(item.id)}
+    <section id="portfolio" className="bg-white h-screen lg:h-auto">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 h-screen lg:h-auto lg:min-h-[80vh]">
+        {/* Left Side - Info Panel */}
+        <div className="flex flex-col justify-between p-8 md:p-12 lg:p-16 h-[30vh] lg:h-auto flex-shrink-0 overflow-hidden">
+          {/* Title & Description */}
+          <div className="overflow-hidden flex-1">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.42, 0, 0.58, 1] }}
+                className="h-full flex flex-col"
               >
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={showAfter[item.id] ? "after" : "before"}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="absolute inset-0"
-                  >
-                    <Image
-                      src={showAfter[item.id] ? item.afterImage : item.beforeImage}
-                      alt={item.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </motion.div>
-                </AnimatePresence>
+                <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight mb-4 line-clamp-2">
+                  {activeItem.title}
+                </h2>
+                <p className="text-neutral-600 leading-relaxed line-clamp-4 lg:line-clamp-none">
+                  {activeItem.description}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* CTA Link */}
+          <div className="mt-6 lg:mt-0 flex-shrink-0">
+            <Link
+              href="#"
+              className="inline-flex items-center gap-3 text-sm tracking-wide hover:gap-5 transition-all duration-300 group"
+            >
+              <span>{portfolio.ctaText}</span>
+              <span className="w-8 h-[1px] bg-neutral-900 group-hover:w-12 transition-all duration-300" />
+            </Link>
+          </div>
+        </div>
 
-                {/* Before/After Label */}
-                <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium">
-                    {showAfter[item.id] ? "After" : "Before"}
-                  </span>
-                </div>
-
-                {/* Click hint */}
-                <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="px-3 py-1 bg-white/90 rounded-full text-xs font-medium">
-                    클릭하여 전환
-                  </span>
-                </div>
-
-                {/* Improvement Badge */}
-                <div className="absolute bottom-4 left-4">
-                  <span className="px-3 py-1 bg-accent text-white rounded-full text-xs font-medium">
-                    {item.improvement}
-                  </span>
-                </div>
+        {/* Right Side - Image Grid (2x2 on desktop, 1 column on mobile) */}
+        <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-2 h-[70vh] lg:h-auto flex-1">
+          {portfolio.items.map((item, index) => (
+            <Link
+              key={item.id}
+              href={item.link}
+              className="relative overflow-hidden bg-neutral-900 min-h-0 lg:aspect-auto"
+              onMouseEnter={() => !isMobile && setActiveIndex(index)}
+              onClick={(e) => {
+                if (isMobile && activeIndex !== index) {
+                  e.preventDefault();
+                  setActiveIndex(index);
+                }
+              }}
+            >
+              <div className="relative w-full h-full overflow-hidden">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  className={`object-cover transition-all duration-500 ${
+                    activeIndex === index ? "scale-100" : "scale-100 grayscale-[30%]"
+                  }`}
+                />
+                {/* Hover Overlay */}
+                <div
+                  className={`absolute inset-0 bg-black/20 transition-opacity duration-300 ${
+                    activeIndex === index ? "opacity-0" : "opacity-100"
+                  }`}
+                />
               </div>
-
-              {/* Info */}
-              <div className="mt-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs font-medium text-accent">
-                    {item.category}
-                  </span>
-                  <span className="text-xs text-secondary">•</span>
-                  <span className="text-xs text-secondary">{item.location}</span>
-                </div>
-                <h3 className="text-xl font-semibold">{item.title}</h3>
-              </div>
-            </motion.div>
+            </Link>
           ))}
         </div>
       </div>
