@@ -24,10 +24,10 @@ export function Portfolio() {
   const activeItem = portfolio.items[activeIndex];
 
   return (
-    <section id="portfolio" className="bg-white">
-      <div className="grid grid-cols-1 lg:grid-cols-3 min-h-screen lg:min-h-[80vh]">
+    <section id="portfolio" className="bg-white min-h-screen">
+      <div className="grid grid-cols-1 lg:grid-cols-3 h-full lg:h-screen">
         {/* Left Side - Info Panel */}
-        <div className="col-span-1 flex flex-col justify-between p-8 md:p-12 lg:p-16">
+        <div className="col-span-1 flex flex-col justify-center p-8 md:p-12 lg:p-16">
           {/* Title & Description */}
           <div className="overflow-hidden flex-1">
             <AnimatePresence mode="wait">
@@ -62,12 +62,12 @@ export function Portfolio() {
         </div>
 
         {/* Right Side - Image Grid (2x2) */}
-        <div className="col-span-1 lg:col-span-2 grid grid-cols-2 grid-rows-2">
+        <div className="col-span-1 lg:col-span-2 grid grid-cols-2 grid-rows-2 h-[50vh] lg:h-screen">
           {portfolio.items.map((item, index) => (
             <Link
               key={item.id}
               href={item.link}
-              className="relative overflow-hidden bg-neutral-900 aspect-square lg:aspect-auto"
+              className="relative overflow-hidden bg-neutral-900"
               onMouseEnter={() => !isMobile && setActiveIndex(index)}
               onClick={(e) => {
                 if (isMobile && activeIndex !== index) {
