@@ -24,7 +24,7 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="section-padding bg-muted">
+    <section id="contact" className="section-padding bg-muted min-h-screen flex items-center">
       <div className="container-custom">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Left: Info */}

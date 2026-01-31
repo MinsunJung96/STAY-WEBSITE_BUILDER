@@ -7,7 +7,7 @@ export function Process() {
   const { process } = siteContent;
 
   return (
-    <section id="process" className="section-padding bg-primary text-white">
+    <section id="process" className="section-padding bg-primary text-white min-h-screen flex items-center">
       <div className="container-custom">
         {/* Section Header */}
         <motion.div

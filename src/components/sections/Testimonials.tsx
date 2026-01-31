@@ -7,7 +7,7 @@ export function Testimonials() {
   const { testimonials } = siteContent;
 
   return (
-    <section id="testimonials" className="section-padding">
+    <section id="testimonials" className="section-padding min-h-screen flex items-center">
       <div className="container-custom">
         {/* Section Header */}
         <motion.div

@@ -7,7 +7,7 @@ export function Services() {
   const { services } = siteContent;
 
   return (
-    <section id="services" className="section-padding bg-muted">
+    <section id="services" className="section-padding bg-muted min-h-screen flex items-center">
       <div className="container-custom">
         {/* Section Header */}
         <motion.div
